@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hands-Free Cookbook</title>
+    <link rel="stylesheet" href="style.css?v=11" />
+  </head>
+  <body data-view="dashboard">
+    <!-- Page message camera denied etc. -->
+    <div id="banner" class="banner" hidden></div>
+
+    <main class="app">
+      <header class="topbar">
+        <!-- Dashboard heading -->
+        <div class="dash-only">
+          <p class="eyebrow">Hands-free cookbook</p>
+          <h1>What are we cooking?</h1>
+        </div>
+        <!-- Cooking heading -->
+        <div class="cook-only">
+          <button id="back" class="back-link" title="Back to all recipes (Esc)">← All recipes</button>
+          <h1 id="recipe-title">Loading…</h1>
+          <a id="recipe-source" class="source-link" target="_blank" rel="noopener" hidden>Source: Budget Bytes ↗</a>
+        </div>
+        <div class="status">
+          <span id="speaker" class="pill pill-speaker" hidden>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor" />
+              <path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" />
+            </svg>
+            Reading aloud
+          </span>
+          <span id="calib-badge" class="pill">Default calibration</span>
+          <button id="recalibrate" class="pill pill-btn" title="Re-run calibration (C)">↻ Recalibrate</button>
+          <button id="cam-toggle" class="pill pill-btn" title="Pause / resume camera (P)">⏸ Pause camera</button>
+        </div>
+      </header>
+
+      <!-- ===== Dashboard: search + recipes ===== -->
+      <div id="dashboard" class="dash-only">
+        <section class="search">
+          <form id="search-form" class="search-form" role="search">
+            <input id="search-input" type="search" placeholder="Search Budget Bytes recipes… (try “pancakes”)" aria-label="Search recipes" autocomplete="off" />
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>
+        </section>
+
+        <!-- Tabs -->
+        <nav class="tabs" role="tablist" aria-label="Recipe lists">
+          <button id="tab-home" class="tab" role="tab" aria-selected="true" aria-controls="panel-home">Home</button>
+          <button id="tab-saved" class="tab" role="tab" aria-selected="false" aria-controls="panel-saved">Saved <span id="saved-count" class="tab-count">1</span></button>
+        </nav>
+
+        <!-- Home: search results + new / recommended rows -->
+        <div id="panel-home" role="tabpanel" aria-labelledby="tab-home">
+          <section id="results-section" class="dash-section" hidden>
+            <div class="dash-head">
+              <h2 id="results-title">Search results</h2>
+              <button id="results-clear" class="pill pill-btn" type="button">Clear</button>
+            </div>
+            <ul id="search-results" class="recipe-grid"></ul>
+          </section>
+          <div id="home-rows"><p class="grid-note">Loading recipes…</p></div>
+        </div>
+
+        <!-- Saved: recipes you've opened -->
+        <div id="panel-saved" role="tabpanel" aria-labelledby="tab-saved" hidden>
+          <section class="dash-section">
+            <ul id="my-recipes" class="recipe-grid"></ul>
+          </section>
+        </div>
+      </div>
+
+      <footer class="cheatsheet dash-only">
+        <span><b>Point 👈 / 👉</b> pick recipe</span>
+        <span><b>Pinch + move ↕</b> change row</span>
+        <span><b>Hold 👍</b> open recipe</span>
+        <span><b>Hold ✊</b> Home / Saved</span>
+        <span class="keys">Keys: ← → ↑ ↓ · Enter open · C calibrate · P camera · D debug</span>
+      </footer>
+
+      <!-- ===== Cooking view ===== -->
+      <div id="cook-view" class="cook-only cook-view">
+      <div class="progress-row">
+        <span id="step-count" class="step-count">Step 1 of 1</span>
+        <div class="progress" role="progressbar" aria-label="Recipe progress">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="cook-grid">
+        <section class="steps-panel" aria-labelledby="steps-heading">
+          <h2 id="steps-heading">Instructions</h2>
+          <div id="steps-list" class="steps-list">
+            <article id="card" class="card" aria-current="step">
+              <div class="step-heading">
+                <span id="current-step-label" class="step-label">Current step</span>
+                <div class="card-check" aria-label="Step complete">✓</div>
+              </div>
+              <p id="step-text" class="step-text"></p>
+              <ul id="chips" class="chips" aria-label="Ingredients in this step"></ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="ingredients" aria-labelledby="ingredients-heading">
+          <h2 id="ingredients-heading">All ingredients</h2>
+          <ul id="ingredient-list" class="ingredient-list"></ul>
+        </section>
+      </div>
+
+      </div>
+    </main>
+
+    <!-- Webcam preview, top-right -->
+    <aside class="cam">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <div id="cam-status" class="cam-status">Starting camera…</div>
+    </aside>
+
+    <aside class="gesture-guide cook-only" aria-label="Cooking gestures">
+      <h2>Cooking gestures</h2>
+      <span><b>Point 👈 / 👉</b> change step</span>
+      <span><b>Pinch 🤏 + move ↕</b> scroll</span>
+      <span><b>Hold ✊</b> read aloud</span>
+      <span><b>Hold 👍</b> mark done</span>
+      <span><b>Hold ✌️</b> all recipes</span>
+      <span class="keys">Keys: ← → · Space · Enter · Esc all recipes · C calibrate · P camera · D debug</span>
+    </aside>
+
+    <!-- Point-hold loading ring -->
+    <div id="nav-ring" class="nav-ring" hidden>
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="nav-track" cx="60" cy="60" r="52" />
+        <circle id="nav-arc" class="nav-arc" cx="60" cy="60" r="52" />
+      </svg>
+      <div id="nav-arrow" class="nav-arrow">→</div>
+      <div id="nav-label" class="nav-label">Next step</div>
+    </div>
+
+    <!-- Gesture HUD -->
+    <div class="hud" aria-live="polite">
+      <div class="hud-live">Seeing: <b id="hud-live">—</b></div>
+      <div id="hud-last" class="hud-last">Last action: —</div>
+    </div>
+
+    <!-- Debug panel (D) -->
+    <pre id="debug" class="debug" hidden></pre>
+
+    <!-- Calibration overlay (C) -->
+    <div id="calib" class="calib" hidden>
+      <div class="calib-panel">
+        <div id="calib-dots" class="calib-dots"></div>
+        <div id="calib-icon" class="calib-icon">✋</div>
+        <h2 id="calib-title">Calibration</h2>
+        <p id="calib-text"></p>
+        <div class="calib-bar"><div id="calib-fill"></div></div>
+        <p id="calib-status" class="calib-status"></p>
+        <button id="calib-skip" class="btn">Skip, use defaults</button>
+        <p class="calib-hint">Esc to skip · C to restart</p>
+      </div>
+    </div>
+
+    <script type="module" src="app.js?v=9"></script>
+  </body>
+</html>
