@@ -1,4 +1,6 @@
+# Existing project ignores
 node_modules/
 .DS_Store
 228_tech_setup-main/
 228_tech_setup-main.zip
+node_modules.zip
